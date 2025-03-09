@@ -1,0 +1,78 @@
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @arg map $tree
+ * @arg  list $path
+ */
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @param map $map
+ * @base string $base
+ * @option string $option
+ */
+/**
+ * Defines and media breakpoint
+ *
+ * @param string $size
+ */
+/**
+ * Pushes element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+/**
+ * Pulls element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+/**
+ * Prepends cross browser prefix to CSS property
+ *
+ * @param [CSS Property] $cssProp;
+ * @param $value
+ */
+/**
+ * Cross Browser CSS transition mixin
+ *
+ * @param [int/float] $speed
+ */
+/**
+ * Cross Browser CSS border-radius mixin
+ *
+ * @params [var ags] $radius;
+ */
+/** fontSize usage:
+ * Sets font sizes based on screen size.
+ *
+ * @arg [CSS Unit of Measure] $unit,
+ * @arg [The name of screen size] string $name
+ * @arg [A list of screen break points to use] list $sreens
+ */
+.pricing-list ._container {
+  margin: 100px auto;
+  grid-gap: 50px;
+}
+.pricing-list .price {
+  padding: 20px;
+  box-shadow: 0px 0px 40px 0px var(--color-shadow);
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -o-border-radius: 15px;
+  -ms-border-radius: 15px;
+}
+
+#pricing-faq {
+  padding: 100px 0px;
+  background: rgb(231, 234, 236);
+  background: linear-gradient(196deg, rgb(231, 234, 236) 0%, rgb(252, 254, 255) 100%);
+}
+#pricing-faq ._container {
+  margin: 100px auto;
+  grid-gap: 50px;
+}

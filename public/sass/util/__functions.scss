@@ -1,0 +1,56 @@
+@use '_config' as config;
+
+
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @arg map $tree
+ * @arg  list $path
+ */
+@function query-map($tree: false, $path...) {
+	$el: $tree;
+
+	@if not $tree or not $path { @return null; }
+
+	@each $p in $path {
+		@if map-has-key($el, $p) {
+			$el: map-get($el, $p);
+		} @else {
+			// @warn 'Items (#{$path}) not found in tree' ;
+			$el: null;
+		}
+	}
+
+	@return $el;
+}
+
+
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @param map $map
+ * @base string $base
+ * @option string $option
+ */
+
+@function color($color...) {
+	@return query-map(config.$COLOR, $color...);
+}
+
+@function font( $font: false ) {
+	@return query-map(config.$FONT, 'family', $font);
+}
+
+@function break-point($screen-size, $max: false) {
+	@if ($max) {
+		@return query-map(config.$SCREEN, $screen-size, "max-width");
+	}
+
+	@return query-map(config.$SCREEN, $screen-size, "min-width");
+}
+
+@function colwidth( $grid-count, $col-count ) {
+ 	@return calc(percentage(calc(100/$grid-count) * $col-count) / 100);
+}

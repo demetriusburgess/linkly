@@ -1,0 +1,145 @@
+// This File is contains all SASS variables used throughtout files as well as core theme setting like the theme name & author
+
+// Set theme Header
+$THEME: (
+	'Name':  "Simple Theme",
+	"Version": 1.1,
+	"URL": "http://demetriusburgess.com/simple_theme",
+	"Author": ( "Name": "Demetrius Burgess", "URL":"http://demetriusburgess.com" ),
+	"Text Domain": "simpletheme"
+);
+
+$COLOR: (
+	'primary': (
+		'1': #2161e0,
+	),
+	'secondary': (
+		'1': #e93266,
+		'102': rgba(#e93266, 0.2),
+	),
+	'tertiary': (
+		'1': #101044,
+		'2': #54547a,
+		'3': #0f0b2c
+	),
+	'basic': (
+		'white': #fff,
+		'white02': rgba(#fff, 0.2),
+		'shadow': rgba(0,0,0,0.1)
+	)
+);
+
+$_font-size: (
+	'heading-1': (
+		'max-res': 40,
+		'ultra-res':40,
+		'hi-res': 40,
+		'xl': 30,
+		'lg': 30,
+		'md': 30,
+		'sm': 38,
+		'xs': 38
+	),
+	'heading-2': (
+		'max-res': 38,
+		'ultra-res':38,
+		'hi-res': 38,
+		'xl': 36,
+		'lg': 36,
+		'md': 36,
+		'sm': 34,
+		'xs': 34
+	),
+	'heading-3': (
+		'max-res': 28,
+		'ultra-res':28,
+		'hi-res': 28,
+		'xl': 28,
+		'lg': 28,
+		'md': 28,
+		'sm': 26,
+		'xs': 26
+	),
+	'pill-heading': (
+		'max-res': 16,
+		'ultra-res':16,
+		'hi-res': 16,
+		'xl': 16,
+		'lg': 16,
+		'md': 16,
+		'sm': 16,
+		'xs': 16
+	),
+	'paragraph-1': (
+		'max-res': 18,
+		'ultra-res':18,
+		'hi-res': 18,
+		'xl': 18,
+		'lg': 18,
+		'md': 18,
+		'sm': 20,
+		'xs': 20
+	),
+	'paragraph-2': (
+		'max-res': 16,
+		'ultra-res':16,
+		'hi-res': 16,
+		'xl': 16,
+		'lg': 16,
+		'md': 16,
+		'sm': 16,
+		'xs': 16
+	),
+	'bttn': (
+		'max-res': 16,
+		'ultra-res':16,
+		'hi-res': 16,
+		'xl': 16,
+		'lg': 16,
+		'md': 16,
+		'sm': 16,
+		'xs': 16
+	),
+);
+
+$_font-family: (
+	'main': ('Work Sans', sans-serif)
+);
+// TODO: Add global transtion speed array
+// $Global transition sped array
+
+$FONT: (
+	'size': $_font-size,
+	'family': $_font-family
+);
+
+$GRID: (
+	// "width" is actually the "max-width" of the container/grid
+	'xl': ( "max-width": 1040, "width": 1040, "columns": 12, 'gutter': 3, 'margin': auto, ),
+	'lg': ( "max-width": auto, "width": auto, "columns": 12, 'gutter': 3, 'margin': 200,  ),
+	'md': ( "max-width": 840, "width": 840,  "columns": 12, 'gutter': 3, 'margin': auto,  ),
+	'sm': ( "max-width": auto, "width": auto, "columns": 8, 'gutter': 3, 'margin': 32,  ),
+	'xs': ( "max-width": auto, "width": auto, "columns": 4, 'gutter': 3, 'margin': 16,  ),
+);
+
+$SCREEN: (
+	'max-res': ( "min-width": 2048, "columns": 12, 'gutter': 3, 'margin': auto, ),
+	'ultra-res': ( "min-width": 1920, "max-width": 2047, "columns": 12, 'gutter': 3, 'margin': auto, ),
+	'hi-res': ( "min-width": 1680, "max-width": 1919, "columns": 12, 'gutter': 3, 'margin': auto, ),
+	'xl': ( "min-width": 1440, "max-width": 1679, "columns": 12, 'gutter': 3, 'margin': auto, ),
+	'lg': ( "min-width": 1280, "max-width": 1439, "columns": 12, 'gutter': 3, 'margin': 200,  ),
+	'md': ( "min-width": 1024, "max-width": 1279, "columns": 12, 'gutter': 3, 'margin': auto,  ),
+	'sm': ( "min-width": 768, "max-width": 1023, "columns": 8, 'gutter': 3, 'margin': 32,  ),
+	'xs': ( "min-width": 480, "max-width": 767, "columns": 4, 'gutter': 3, 'margin': 16,  ),
+);
+
+$PATH: (
+	'img': 'images/',
+	'font': '../fonts/'
+);
+
+
+$BORDER: (
+	'size': 1.5,
+	'radius': 5
+);

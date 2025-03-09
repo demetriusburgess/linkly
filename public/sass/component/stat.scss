@@ -1,0 +1,80 @@
+@use './../util/_functions' as func;
+@use './../util/_config' as config;
+@use './../util/_mixins' as mix;
+
+
+.stats {
+    padding: 50px 0px;
+    
+    .stat-container {
+        max-width: 90%;
+        margin: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column-gap:5%;
+    }
+
+    .stat {
+        text-align: center;
+
+        &:nth-child(even) {
+            border-left: 1px dashed gray;
+            border-right: 1px dashed gray;
+        }
+
+        .number {
+            $min: func.break-point("hi-res");
+            $max: func.break-point("max-res", "max");
+            font-weight: 400;
+
+            @include mix.break($min, $max) {
+                font-size: 200px;
+            }
+
+            $min: func.break-point("md");
+            $max: func.break-point("xl", "max");
+            
+            @include mix.break($min, $max) {
+                font-size: 180px;
+            }
+
+            $min: func.break-point("xs");
+            $max: func.break-point("sm", "max");
+            
+            @include mix.break($min, $max) {
+                font-size: 100px;
+            }
+        }
+
+        .suffix {
+            font-size: 80px;
+        }
+
+        .description {
+            $min: func.break-point("hi-res");
+            $max: func.break-point("max-res", "max");
+            width: 100% ;
+            font-weight: 400;
+            display: inline-block;
+
+
+            @include mix.break($min, $max) {
+                font-size: 20px;
+            }
+
+            $min: func.break-point("md");
+            $max: func.break-point("xl", "max");
+            
+            @include mix.break($min, $max) {
+                font-size: 20px;
+            }
+
+            $min: func.break-point("xs");
+            $max: func.break-point("sm", "max");
+            
+            @include mix.break($min, $max) {
+                font-size: 20px;
+            }
+        }
+    }
+}

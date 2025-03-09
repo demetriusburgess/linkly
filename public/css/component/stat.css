@@ -1,0 +1,113 @@
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @arg map $tree
+ * @arg  list $path
+ */
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @param map $map
+ * @base string $base
+ * @option string $option
+ */
+/**
+ * Defines and media breakpoint
+ *
+ * @param string $size
+ */
+/**
+ * Pushes element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+/**
+ * Pulls element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+/**
+ * Prepends cross browser prefix to CSS property
+ *
+ * @param [CSS Property] $cssProp;
+ * @param $value
+ */
+/**
+ * Cross Browser CSS transition mixin
+ *
+ * @param [int/float] $speed
+ */
+/**
+ * Cross Browser CSS border-radius mixin
+ *
+ * @params [var ags] $radius;
+ */
+/** fontSize usage:
+ * Sets font sizes based on screen size.
+ *
+ * @arg [CSS Unit of Measure] $unit,
+ * @arg [The name of screen size] string $name
+ * @arg [A list of screen break points to use] list $sreens
+ */
+.stats {
+  padding: 50px 0px;
+}
+.stats .stat-container {
+  max-width: 90%;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-column-gap: 5%;
+}
+.stats .stat {
+  text-align: center;
+}
+.stats .stat:nth-child(even) {
+  border-left: 1px dashed gray;
+  border-right: 1px dashed gray;
+}
+.stats .stat .number {
+  font-weight: 400;
+}
+@media all and (min-width: 1680px) {
+  .stats .stat .number {
+    font-size: 200px;
+  }
+}
+@media all and (min-width: 1024px) and (max-width: 1679px) {
+  .stats .stat .number {
+    font-size: 180px;
+  }
+}
+@media all and (min-width: 480px) and (max-width: 1023px) {
+  .stats .stat .number {
+    font-size: 100px;
+  }
+}
+.stats .stat .suffix {
+  font-size: 80px;
+}
+.stats .stat .description {
+  width: 100%;
+  font-weight: 400;
+  display: inline-block;
+}
+@media all and (min-width: 1680px) {
+  .stats .stat .description {
+    font-size: 20px;
+  }
+}
+@media all and (min-width: 1024px) and (max-width: 1679px) {
+  .stats .stat .description {
+    font-size: 20px;
+  }
+}
+@media all and (min-width: 480px) and (max-width: 1023px) {
+  .stats .stat .description {
+    font-size: 20px;
+  }
+}

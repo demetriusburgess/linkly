@@ -1,0 +1,12 @@
+@use './util/__vars' as var;
+@use './util/__functions' as f;
+/*
+Theme Name: #{f.query-map(var.$THEME, "Name")}
+Theme URI: #{f.query-map(var.$THEME, "URL")}
+Author: #{f.query-map(var.$THEME, "Author", "Name")}
+Author URI: #{f.query-map(var.$THEME, "Author", "URL")}
+Description: A simple, elegent, responsive theme.
+Version: #{f.query-map(var.$THEME, "Version")}
+Tags: responsive-layout
+Text Domain: #{f.query-map(var.$THEME, "Text Domain")}
+*/

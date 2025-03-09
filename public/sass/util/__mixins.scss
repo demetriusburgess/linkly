@@ -1,0 +1,159 @@
+@use './_config' as config;
+@use './_functions' as func;
+@use "sass:meta";
+
+/**
+ * Defines and media breakpoint
+ *
+ * @param string $size
+ */
+
+@mixin break ( $size, $max-width: false, $type: all ) {
+	$min: $size;
+	$max: $max-width;
+
+ 	@if map-has-key(config.$SCREEN, $size) {
+ 		$min: func.query-map(config.$SCREEN, $size, 'min-width'); 
+ 		$max: func.query-map(config.$SCREEN, $size, 'max-width'); 
+ 	}
+
+ 	@if ($min and $max) {
+		@media #{$type} and (min-width: $min + px) and (max-width:$max + px) {
+			@content;
+		}
+ 	} @else if ($min){
+		@media #{$type} and (min-width: $min + px) {
+			@content;
+		}
+	} @else if ($max) {
+		@media #{$type} and (max-width:$max + px) {
+			@content;				
+	    }
+	}
+}
+
+
+/**
+ * Pushes element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+@mixin push( $colcount: "",  $n: "" ) {
+	@if $colcount != "" and $n != "" {
+		left: func.colwidth( $colcount, $n );
+	}
+}
+
+/**
+ * Pulls element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+@mixin pull( $colcount: "",  $n: "" ) {
+	@if $colcount != "" and $n != "" {
+		left: -(func.colwidth( $colcount, $n ));
+	}
+}
+
+/**
+ * Prepends cross browser prefix to CSS property
+ *
+ * @param [CSS Property] $cssProp;
+ * @param $value
+ */
+
+@mixin prefix( $cssProp, $value, $prefixes: ('webkit', 'moz', 'o', 'ms')) {
+	#{$cssProp} : $value;
+
+	@each $pre in $prefixes {
+		$newProp: "-" + $pre + "-" + $cssProp;
+		#{$newProp} : $value;
+	}
+}
+
+
+/**
+ * Cross Browser CSS transition mixin
+ *
+ * @param [int/float] $speed
+ */
+@mixin transition( $speed:0.5s ) {
+	@include prefix(transition, $speed);
+}
+
+/**
+ * Cross Browser CSS border-radius mixin
+ *
+ * @params [var ags] $radius;
+ */
+@mixin borderRadius($radius...) {
+	@include prefix(border-radius, $radius );
+}
+
+
+@mixin fontFace( $family-name, $file-name, $weight: 400, $style: normal ) {
+	$path: func.query-map(config.$PATH, 'font');
+
+	@font-face {
+		@include font($family-name, $weight: 400, $style: normal); 
+		src: url("#{$path}#{$file-name}.eot");                                           /* IE9 Compat Modes */
+		src: url("#{$path}#{$file-name}.eot?#iefix")      format("embedded-opentype"),   /* IE6-IE8 */
+			 url("#{$path}#{$file-name}.woff")            format("woff"),                /* Pretty Modern Browsers */
+			 url("#{$path}#{$file-name}.ttf")             format("truetype"),            /* Safari, Android, iOS */
+			 url("#{$path}#{$file-name}.svg#svgFontName") format("svg");                 /* Legacy iOS */
+	};
+}
+
+@mixin font ( $family, $weight: 300, $style: normal ) {
+	font: {
+		family: $family;
+		weight: $weight;
+		style: $style;
+	}
+}
+
+
+/** fontSize usage:
+ * Sets font sizes based on screen size.
+ *
+ * @arg [CSS Unit of Measure] $unit,
+ * @arg [The name of screen size] string $name
+ * @arg [A list of screen break points to use] list $sreens
+ */
+@mixin fontSize ( $unit:px, $name: false, $screens:  ( "lg", "md", "sm", "xs" )) {
+    $fonts: func.query-map(config.$FONT, ('size'));
+
+    @if $fonts and $name {
+        @each $size in $screens {
+            @include break($size) {
+                font-size: func.query-map( $fonts,  $name, $size ) + $unit !important;
+            }
+        }
+    }
+}
+
+@mixin grid-column-attrs( $options ) {
+	$settings: map-merge((
+		'width': auto,
+		'padding': 10px,
+		'position': relative,
+		'display': inline-block
+	), $options);
+
+	width: func.query-map($settings, ('width') );
+	padding: func.query-map($settings, ('padding') );
+	position: func.query-map($settings, ('position') );
+	display: func.query-map($settings, ('display') );
+}
+
+@mixin bg($img: false, $props) {
+	@debug $props;
+	@each $prop, $val in $props {
+		background: {
+			#{$prop}: $val;
+			image: if(func.query-map(config.$PATH, 'img'), $img, null);
+		}
+	}
+}

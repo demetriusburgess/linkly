@@ -1,0 +1,16 @@
+@use './util/_functions' as func;
+@use './util/_vars' as global;
+@use './util/_mixins' as mix;
+@use './global/_globals';
+
+
+:root {
+    --primary-1: func.color(("primary", "1"));
+    // --secondary-1: func.color("secondary", "1");
+    // --tertiary-1: func.color("tertiary", "1");
+    // --tertiary-2: func.color("tertiary", "2");
+}
+
+html, body {
+    
+}

@@ -1,0 +1,47 @@
+@use './../util/_functions' as func;
+@use './../util/_config' as config;
+@use './../util/_mixins' as mix;
+
+.bttn {
+    width: 350px;
+    padding: 25px;
+    display: inline-block;
+    display: inline-block;
+    border: 1px solid var(--color-secondary-1);
+    background-color: var(--color-secondary-1);
+    color: var(--color-primary-1);
+    @include mix.font('Work Sans', 500);
+    
+    $min: func.break-point("hi-res");
+    $max: func.break-point("max-res", "max");
+
+    @include mix.break($min, $max) {
+        font-size: 28px;
+    }
+
+    $min: func.break-point("md");
+    $max: func.break-point("xl", "max");
+    
+    @include mix.break($min, $max) {
+        font-size: 24px;
+    }
+
+    $min: func.break-point("xs");
+    $max: func.break-point("sm", "max");
+    
+    @include mix.break($min, $max) {
+        font-size: 24px;
+    }
+
+    &:before {
+        display: block;
+    }
+
+    &:link, &:visited {
+        text-decoration: none;
+    }
+
+    &:hover, &:active {
+        text-decoration: none;
+    }
+}

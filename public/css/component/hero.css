@@ -1,0 +1,6 @@
+.hero {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--primary-1);
+  color: pink;
+}

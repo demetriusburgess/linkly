@@ -1,0 +1,131 @@
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @arg map $tree
+ * @arg  list $path
+ */
+/**
+ * Pass in a key:value map and the color to use from that map. If the color has option defined by a map i.e.
+ * "red":("rgb": rgba(255 255 255), "hex": #hexcode ), pass in the name of that option.
+ *
+ * @param map $map
+ * @base string $base
+ * @option string $option
+ */
+/**
+ * Defines and media breakpoint
+ *
+ * @param string $size
+ */
+/**
+ * Pushes element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+/**
+ * Pulls element based on grid size
+ *
+ * @param number $colcount
+ * @param number $n
+ */
+/**
+ * Prepends cross browser prefix to CSS property
+ *
+ * @param [CSS Property] $cssProp;
+ * @param $value
+ */
+/**
+ * Cross Browser CSS transition mixin
+ *
+ * @param [int/float] $speed
+ */
+/**
+ * Cross Browser CSS border-radius mixin
+ *
+ * @params [var ags] $radius;
+ */
+/** fontSize usage:
+ * Sets font sizes based on screen size.
+ *
+ * @arg [CSS Unit of Measure] $unit,
+ * @arg [The name of screen size] string $name
+ * @arg [A list of screen break points to use] list $sreens
+ */
+.form-section {
+  padding: 200px 0px 60px;
+  background: rgb(224, 242, 255);
+  background: linear-gradient(0deg, rgb(224, 242, 255) 0%, rgb(234, 247, 255) 100%);
+}
+
+.form-wrapper {
+  max-width: 80%;
+  padding: 50px;
+  box-shadow: 0px 0px 40px 0px var(--color-shadow);
+  border-radius: 30px;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -o-border-radius: 30px;
+  -ms-border-radius: 30px;
+}
+
+form {
+  position: relative;
+}
+form.bar-form {
+  width: 100%;
+}
+form.bar-form input[type=text] {
+  width: 100%;
+  height: 61px;
+  border-radius: 50px;
+  margin-right: -120px;
+  padding: 10px 15px;
+  padding-right: 120px;
+  border: 0px solid;
+  box-shadow: 0px 0px 40px 0px var(--color-shadow);
+  position: relative;
+  z-index: 1;
+}
+form.bar-form button {
+  border: 0px;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  z-index: 2;
+  margin: 0px;
+  cursor: pointer;
+}
+form.round-corner-form input[type=text], form.round-corner-form input[type=email], form.round-corner-form input[type=num] {
+  width: 100%;
+  height: 71px;
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  border-radius: 50px;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  -o-border-radius: 50px;
+  -ms-border-radius: 50px;
+  border: 1px solid var(--color-shadow);
+  position: relative;
+  z-index: 1;
+}
+form.round-corner-form textarea {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 20px;
+  padding: 25px 15px;
+  border-radius: 30px;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+  -o-border-radius: 30px;
+  -ms-border-radius: 30px;
+  border: 1px solid var(--color-shadow);
+  position: relative;
+  z-index: 1;
+}
+form.round-corner-form button {
+  border: none;
+  margin: 0px;
+}

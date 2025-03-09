@@ -1,0 +1,729 @@
+
+// -------------------   FONT include examples   -------------------
+
+// 1) Import fonts (from local folder):
+// @include mix.fontFace( 'FuturaStd-Book', 'FuturaStd-Book' );
+
+// 2) Add font family to the element
+// div {
+//     @include mix.fontFam( 'FuturaStd-Book' );
+// }
+@use './../util/__functions' as func;
+@use './../util/__config' as config;
+@use './../util/__mixins' as mix;
+
+// config.$GRID: func.query_map($_GLOBALS, "grid");
+
+%default-class {
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    // font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: auto;
+    box-sizing: border-box;
+}
+
+
+%grid-container {
+    width: 100%;
+    margin: 0px auto;
+    position: relative;
+    left: 0px;
+    right: 0px;
+	@include mix.prefix( box-sizing, border-box );
+
+    @each $screen in map-keys(config.$GRID) {
+        $left_margin: func.query_map(config.$GRID, $screen, "margin");
+        $right_margin: func.query_map(config.$GRID, $screen, "margin");
+        $left_gutter: func.query_map(config.$GRID, $screen, "gutter");
+        $right_gutter: func.query_map(config.$GRID, $screen, "gutter");
+
+        @if type-of($left_margin) == number {
+            $left_margin: $left_margin*2;
+        }
+
+        @if type-of($right_margin) == number {
+            $right_margin: $right_margin*2;
+        }
+
+        @if type-of($left_gutter) == number {
+            $left_gutter: $left_gutter*2;
+        }
+
+        @if type-of($right_gutter) == number {
+            $right_gutter: $right_gutter*2;
+        }
+
+        @include mix.break($screen) {
+            max-width: func.query_map(config.$GRID, $screen, "max-width");
+            margin: {
+                left: $left_margin+px;
+                right: $right_margin+px;
+            };
+            padding: {
+                left: $right_gutter + px;
+                right: $left_gutter + px;
+            }
+        }
+    }
+
+	// @include mix.break( lg ) {
+	// // 	max-width: func.query_map($grid, ("lg", "width")) + px;
+	// 	// padding: 0px 10px;
+ //        padding: 0px func.query_map($grid, "lg", "gutter") *2 + px;
+ //        padding: 0px 40px;
+	// }
+
+	// @include mix.break( md ) {
+	// 	// max-width: func.query_map($grid, ("md", "width")) + px;
+	// 	// padding: 0px 10px;
+ //        padding: 0px func.query_map($grid, "md", "gutter")*2 + px;
+ //        padding: 0px 40px;
+	// }
+
+	// @include mix.break( sm ) {
+	// 	// max-width: func.query_map($grid, ("sm", "width")) + px;
+	// 	// padding: 0px 10px;
+ //        padding: 0px func.query_map($grid, "sm", "gutter")*2 + px;
+ //        padding: 0px 40px;
+	// }
+
+	// @include mix.break( xs ) {
+	// 	// max-width: func.query_map($grid, ("xs", "width")) + px;
+ //        padding: 0px func.query_map($grid, "xs", "gutter")*2 + px;
+	// }
+}
+
+// @function colwidth( $grid-count, $col-width, $gutter = 0 ) {
+//     $str: '';
+
+//     @for $i from $grid-count {
+//         $str: $str + '1fr ';
+//     }
+//   // @return percentage((100/$grid-count) * $col-count) / 100;
+// }
+
+%grid-layout {
+    width: 100%;
+    margin: 0px auto;
+    position: relative;
+    left: 0px;
+    right: 0px;
+    @include mix.prefix( box-sizing, border-box );
+    display: grid;
+    // grid-template-columns: 
+}
+
+%font-reset {
+    h1, h2, h3, h4, h5, h6, p, li, a, span, label, text, textPath {
+        margin: 0px;
+        padding: 0px;
+        color: inherit;
+        font-family: inherit;
+        font-style: inherit;
+        font-weight: inherit;
+        font-size:  inherit;
+        line-height:  inherit;
+
+        &:link, &:visited {
+            color: inherit;
+            font-family: inherit;
+            font-style: inherit;
+            font-weight: inherit;
+            font-size:  inherit;
+            line-height:  inherit;
+        }
+    }
+}
+
+
+._pos {
+    position: absolute;
+
+    &--center-Y {
+        @extend ._pos;
+        top: 50%;
+        @include mix.prefix( transform, translateY(-50%) );
+    }
+
+    &--center-X {
+        @extend ._pos;
+        left: 50%;
+        @include mix.prefix( transform, translateX(-50%) );
+    }
+
+    &--center {
+        @extend ._pos;
+        top: 50%;
+        left: 50%;
+        @include mix.prefix( transform, translateY(-50%) translateX(-50%) );
+    }
+}
+
+
+// ._col--<screen-size>-<column-number>
+._col {
+    @each $screensize, $attrs in config.$GRID {
+        $colcount: func.query_map(config.$GRID, $screensize, "columns" );
+        $gutter: calc(func.query_map(config.$GRID, $screensize, "gutter"));
+
+        @if type-of($gutter) == number {
+            $gutter: calc($gutter/2);
+        }
+
+        @include mix.break( $screensize ) {
+            @for $i from 1 through  $colcount {
+                &--#{$screensize}-#{$i} {
+                    @include mix.grid-column-attrs((
+                        'width': st-colwidth( $colcount, $i ),
+                        'padding': $gutter + px,
+                    ));
+                    vertical-align: top;
+                }
+            }
+        }
+    }
+}
+
+
+// ._grid {
+//     display: grid;
+
+//     @each $screensize, $attrs in config.$GRID {
+//         $colcount: func.query_map(config.$GRID, $screensize, "columns");
+//         $frags: (1fr);
+
+//         @include mix.break( $screensize ) {
+//             @for $i from 1 through  $colcount {
+//                 &--col-#{$screensize}-#{$i} {
+//                     grid-template-columns:$frags;
+//                     grid-gap: 5px;
+//                 }
+
+//                 $c: append($frags, 1fr);
+//                 $frags: $c;
+//             }
+//         }
+//     }
+// }
+
+
+// ._grid {
+//     display: grid;
+
+//     @each $screensize, $attrs in config.$SCREEN {
+//         $colcount: func.query_map(config.$SCREEN, $screensize, "columns");
+
+//         @include mix.break( $screensize ) {
+//             grid-template-columns: repeat($colcount, 1fr);
+//             grid-gap: 5px;
+//         }
+//     }
+
+//     ._col {
+//         @each $screensize, $attrs in config.$SCREEN {
+//             $colcount: func.query_map(config.$SCREEN, $screensize, "columns");
+    
+//             @include mix.break( $screensize ) {
+//                 @for $i from 1 through  $colcount {
+//                     &--#{$screensize}-#{$i} {
+//                         grid-column: $i;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
+
+._grid {
+    display: grid;
+
+    @each $screensize, $attrs in config.$SCREEN {
+        $colcount: func.query_map(config.$SCREEN, $screensize, "columns");
+        $gap: func.query_map(config.$SCREEN, $screensize, "gutter");
+
+        @include mix.break( $screensize ) {
+            @for $i from 1 through  $colcount {
+                &--#{$screensize}-#{$i} {
+                    grid-template-columns: repeat($i, 1fr);
+                    grid-gap: $gap + px;
+                }
+            }
+        }
+    }
+}
+
+._push {
+    @each $screensize, $attrs in config.$GRID {
+        $colcount: func.query_map(config.$GRID, $screensize, "columns");
+
+        @include mix.break( $screensize ) {
+            @for $i from 1 through  $colcount {
+                &--#{$screensize}-#{$i} {
+                    @include mix.push( $colcount, $i );
+                }
+            }
+        }
+    }
+}
+
+._pull {
+    @each $screensize, $attrs in config.$GRID {
+        $colcount: func.query_map(config.$GRID, $screensize, "columns");
+
+        @include mix.break( $screensize ) {
+            @for $i from 1 through  $colcount {
+                &--#{$screensize}-#{$i} {
+                    @include mix.pull( $colcount, $i );
+                }
+            }
+        }
+    }
+}
+
+._display {
+    // TODO: Create a for loop to hand genereating this
+
+    @each $screensize, $attrs  in config.$GRID {
+        $display: block;
+
+        &--#{$screensize} {
+            @each $break, $attrs in config.$GRID {
+                @if $screensize == $break {
+                    $display: block;
+                } @else {
+                    $display: none;
+                }
+
+                @include mix.break( $break ) { display: $display; }
+            }
+        }
+    }
+}
+
+._hide {
+    display: none !important;
+
+    @each $screensize, $attrs  in config.$GRID {
+        $display: block;
+
+        &--#{$screensize} {
+            @each $break, $attrs in config.$GRID {
+                @if $screensize == $break {
+                    $display: none !important;
+                } @else {
+                    $display: block;
+                }
+
+                @include mix.break( $break ) { display: $display; }
+            }
+        }
+    }
+
+    &--visually {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+    }
+}
+
+._fnt {
+    @extend %default-class;
+
+    $font_weights: (
+        'thn' 100,
+        'lgt' 300,
+        'reg' 400,
+        'med' 500,
+        'bld' 600,
+        'blk' 700,
+    );
+
+    &--center {
+        text-align: center;
+    }
+
+    &--left {
+        text-align: left;
+    }
+
+    &--right {
+        text-align: right;
+    }
+
+    &--justify {
+        text-align: justify;
+    }
+
+    &--uppercase {
+        text-transform: uppercase;
+    }
+
+    &--lowercase {
+        text-transform: lowercase;
+    }
+
+    &--camelcase {
+        text-transform: capitalize;
+    }
+
+    $font-size: func.query_map(config.$FONT, "size");
+    
+    @each $font-name, $fntarr in $font-size {
+        &--#{$font-name} {
+            // @include mix.fontSize( px, $font-name, map-keys(config.$SCREEN));
+            @include mix.fontSize( px, $font-name, map-keys($fntarr));
+        }
+    }
+
+    @each $weightname, $weight in $font_weights {
+		&--#{$weightname} {
+            @extend ._fnt;
+            font-weight: $weight !important;
+        }
+
+        @each $screensize, $attrs in config.$GRID {
+            &--#{$weightname}-#{$screensize} {
+                @extend ._fnt;
+
+                @include mix.break( $screensize ) {
+                    font-weight: $weight  !important;;
+                }
+            }
+        }
+	}    
+}
+
+._color {
+    @each $color, $hex_arr in config.$COLOR {
+        @each $key, $hex in $hex_arr {
+            &--#{$color}-#{$key} {
+                @extend ._fnt;
+                color: $hex !important;
+
+                * {
+                    color: inherit;
+                }
+            }
+
+            &--#{$color}-#{$key}-hvr {
+                &:hover {
+                    // @extend ._fnt;
+                    color: $hex !important;
+                }
+            }
+        }
+    }
+}
+
+._bkgrd {
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    @each $color, $hex_arr in config.$COLOR {
+        @each $key, $hex in $hex_arr {
+            &--#{$color}-#{$key} {
+                @extend ._bkgrd;
+                background-color: $hex;
+
+                &:after {
+                    background-color: $hex;
+                }
+            }
+
+            &--#{$color}-#{$key}-hvr {
+                @extend ._bkgrd;
+
+                &:hover {
+                    background-color: $hex;
+                }
+
+                &:after {
+                    background-color: $hex;
+                }
+
+                &.active {
+                    background-color: $hex;
+                }
+            }
+        }
+    }
+
+    &--fixed {
+        @extend ._bkgrd;
+        background-attachment: fixed;
+    }
+}
+
+._brd {
+    border-width: func.query_map(config.$BORDER, 'size') + px;
+
+    @each $b in ( 'top', 'bottom', 'left', 'right') {
+        &--#{$b} {
+            // border-#{$b}-style: solid;
+            // border-width: 1.5px;
+            border-#{$b}-width: func.query_map(config.$BORDER, 'size') + px;
+
+            @each $style in (dotted, dashed, solid, double, groove, ridge, inset, outset, hidden) {
+                &-#{$style} { 
+                    border-#{$b}-width: func.query_map(config.$BORDER, 'size') + px;
+                    border-#{$b}-style: $style;
+                }
+            }
+        }
+    }
+
+    @each $style in (dotted, dashed, solid, double, groove, ridge, inset, outset, hidden) {
+        &--#{$style} { 
+            @extend ._brd;
+            border-style: $style;
+        }
+    }
+
+    &--rnd-corner {
+        @include mix.borderRadius(func.query_map(config.$BORDER, 'radius'));
+    }
+}
+
+._border {
+    appearance: none;
+
+    @each $color, $hex_arr in config.$COLOR {
+        @each $key, $hex in $hex_arr {
+            &--#{$color}-#{$key} {
+                border-color: $hex;
+            }
+
+            &--#{$color}-#{$key}-hvr {
+                &:hover {
+                    border-color: $hex;
+                }
+            }
+        }
+    }    
+}
+
+a {
+    &._bttn--border {
+        @include mix.break( lg ) {
+            padding: 10px 20px;
+        }
+
+        @include mix.break( md ) {
+            padding: 10px 20px;
+        }
+
+        @include mix.break( sm ) {
+            padding: 10px;
+        }
+
+        @include mix.break( xs ) {
+            padding: 10px;
+        }
+    }
+}
+
+._bttn {
+    @extend %default-class;
+    display: inline-block;
+
+    &--pill {
+        @extend ._bttn;
+        @include mix.borderRadius(50px !important);
+        padding: 10px 25px;
+        text-decoration: none;
+    }
+
+    &--rounded-corner {
+        @extend ._bttn;
+        @include mix.borderRadius(3px !important);
+    }
+
+    &--border {
+        @extend ._bttn;
+        @extend ._border;
+        // text-transform: uppercase;
+        line-height: 0.9;
+        // letter-spacing: 3px;
+        border-style: solid;
+        // background-color: transparent;
+
+        @include mix.break( lg ) {
+            padding: 10px 20px;
+            // padding: 9px 12px 11px;
+            border-width: 1px;
+            // letter-spacing: 2px;
+        }
+
+        @include mix.break( md ) {
+            padding: 10px 20px;
+            // padding: 9px 12px 11px;
+            border-width: 1px;
+            // letter-spacing: 2px;
+        }
+
+        @include mix.break( sm ) {
+            // padding: 8px 8px 10px 8px;
+            padding: 10px;
+            border-width: 1px;
+            // letter-spacing: 1px;
+        }
+
+        @include mix.break( xs ) {
+            // padding: 8px 8px 10px 8px;
+            padding: 10px;
+            border-width: 1px;
+            // letter-spacing: 2px;
+        }
+
+        &:hover, &:active, &:focus {
+            outline: none;
+            text-decoration: none;
+        }
+
+        &.icn {
+            i {
+                margin-right: 10px;
+            }
+        }
+
+        &.play {
+            padding-left: 30px;
+            position: relative;
+
+            &:hover {
+                &:after {
+                    border-left: 9px solid func.color(("blue","4"));
+                }
+            }
+
+            &:after {
+                content: "";
+                display: block;
+                height: 15px;
+                width: 15px;
+                position: absolute;
+                top: 50%;
+                left: 10px;
+                transform: translateY(-50%);
+                border-left: 9px solid func.color(("white","1"));
+                border-top: 9px solid transparent;
+                border-bottom: 9px solid transparent;
+            }
+        }
+    }
+
+    &--circle {
+        @extend ._bttn;
+        @extend ._border;
+        padding: 15px 16px;
+        border-style: solid;
+        position: relative;
+        display: inline-block;
+        @include mix.borderRadius( 50% );
+
+        &:after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            right: 3px;
+            bottom: 3px;
+            display: block;
+            opacity: 0;
+            background-color: func.color( ('blue', '5') );
+            @include mix.borderRadius( 50% );
+            @include mix.transition(200ms);
+        }
+
+        &.bullet {
+            width: 12px;
+            height: 12px;
+        }
+
+        &.index {
+
+
+            @include mix.break( lg ) {
+                width: 58px;
+                height: 58px;
+            }
+
+            @include mix.break( md ) {
+                width: 58px;
+                height: 58px;
+            }
+
+            @include mix.break( sm ) {
+                width: 58px;
+                height: 58px;
+            }
+
+            @include mix.break( xs ) {
+                width: 58px;
+                height: 58px;
+            }
+        }
+
+        * {
+            margin: 0px;
+        }
+    }
+
+    &--toggle {
+        @extend ._bttn;
+        width: 50px;
+        height: 50px;
+        background: yellow;
+    }
+}
+
+
+.social-links {
+    padding: 0px;
+    margin: 0px;
+
+    li {
+        display: inline-block;
+
+        @include mix.break( lg ) {
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+
+        @include mix.break( md ) {
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+
+        @include mix.break( sm ) {
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+
+        @include mix.break( xs ) {
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+
+        &:first-child {
+            margin-left: 0px;
+        }
+
+        &:last-child {
+            margin-right: 0px;
+        }
+    }
+}
