@@ -26,7 +26,7 @@ function get_header(string $name = "", array $args = []):void {
 }
 
 function get_footer(string $name = "", array $args = []):void {    
-    get_template_part("footer", $name, $content, true);  
+    get_template_part("footer", $name, $args, true);  
 
 }
 
