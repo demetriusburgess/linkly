@@ -13,8 +13,6 @@ if (!isset($did_load)) {
     start();
 
     require( ABSPATH . 'templates/app.php');
-
-    // echo "template";
 }
 
 ?>

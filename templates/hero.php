@@ -1,13 +1,13 @@
-<section id="<?php echo $content['id']?>" class="hero hero-tall">
+<section id="<?php echo $args['id']?>" class="hero hero-tall">
     <div class="container">
 <!-- <div class="_container _grid _grid--max-res-2 _grid--ultra-res-2 _grid--hi-res-2 _grid--xl-2 _grid--lg-2 _grid--md-2"> -->
         <div class="row justify-content-center">
             <div class="content col-6">
                 <div class="hero-content text-center">
-                    <p class="pill-heading fs-6 fw-bold text-uppercase _color--secondary-1 _bkgrd--secondary-102"><?php echo $content['subtitle']?></p>
-                    <h1 class="fs-1 fw-bold text-uppercase _color--tertiary-1"><?php echo $content['title']?></h1>
-                    <!-- <p class="_fnt--paragraph-1 _fnt--reg _color--tertiary-1"><?php echo $content['message']?></p> -->
-                    <p class="fs-5 fw-normal _color--tertiary-1"><?php echo $content['message']?></p>
+                    <p class="pill-heading fs-6 fw-bold text-uppercase _color--secondary-1 _bkgrd--secondary-102"><?php echo $args['subtitle']?></p>
+                    <h1 class="fs-1 fw-bold text-uppercase _color--tertiary-1"><?php echo $args['title']?></h1>
+                    <!-- <p class="_fnt--paragraph-1 _fnt--reg _color--tertiary-1"><?php echo $args['message']?></p> -->
+                    <p class="fs-5 fw-normal _color--tertiary-1"><?php echo $args['message']?></p>
                 </div>
                 <form method="post" class="bar-form" action="shorten.php">
                     <input type="text" name="long-url" id="" class="fs-5 _color--tertiary-1" placeholder="https://stubbylink.com/register">

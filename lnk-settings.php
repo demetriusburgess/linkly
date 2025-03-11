@@ -6,5 +6,7 @@
 define('SRC','src/');
 
 require( ABSPATH . SRC . 'Functions/functions.php');
+require( ABSPATH . SRC . 'Template/template.php');
+require( ABSPATH . SRC . 'Template/general-template.php');
 
 ?>
