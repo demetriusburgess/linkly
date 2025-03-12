@@ -1,7 +1,7 @@
 <?php
-$ROOTPATH = '/home/dburgess923/dev.demetriusburgess.com/linkly/';
+$ROOTPATH = "{$_SERVER['DOCUMENT_ROOT']}/linkly/";
 
 if (!defined('ABSPATH')) {
-    require($ROOTPATH . 'templates/404.php');
+    require("{$ROOTPATH}templates/404.php");
     die('');
 }
