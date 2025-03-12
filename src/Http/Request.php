@@ -5,47 +5,46 @@
 
 	class Request {
 
-		protected $root;
+		protected string $root;
 
-		protected $url;
+		protected string $url;
 
-		protected $path;
+		protected string $path;
 
-		protected $input;
+		protected array $input;
 
-		protected $method;
+		protected string $method;
 
-		protected $headers;
+		protected array $headers;
 
-		protected $files;
+		protected array $files;
 
-		protected $secure;
+		protected bool $secure;
 
-		protected $ip;
+		protected string $ip;
 
-		protected $segments;
+		protected array $segments;
 
-		protected $server;
+		protected array $server;
 
-		protected $protocol;
+		protected string $protocol;
 
-		public function __construct( $req_var, $request, $server, $files ) {
+		public function __construct(string $req_var, array $request, array $server, array $files) {
          	$this->secure 	= isset($server['HTTPS']) && !empty($server['HTTPS']);
          	$this->protocol = $this->is_secure() ? "https://" : "http://";
 
          	$this->root 	= $server['SERVER_NAME'];
-			$this->path     = $request[ $req_var ];
+			$this->path     = isset($request[ $req_var ]) ? $request[$req_var] : "";
 			$this->url 		= $this->protocol . $this->root . $this->path;
 
-			$this->segments = explode("/",rtrim( $request[ $req_var ], "/" ));
+			$this->segments = explode("/",rtrim( $this->path, "/" ));
 
 			$this->method 	= $server['REQUEST_METHOD'];
 			$this->sever 	= $server;
-
+			
+			$this->files = [];
 
 			if ( sizeof($files) > 0 ) {
-				$this->files = [];
-
 				foreach ($files as $file) {
 					$finfo = new SplFileInfo( $file["tmp_name"] );
 
@@ -54,11 +53,7 @@
 					}
 				}
 
-			} else {
-				$this->files = null;
 			}
-
-
 
 			if ( $this->method == "POST" && array_key_exists("HTTP_X_HTTP_METHOD", $server) ) {
 				if ( $server["HTTP_X_HTTP_METHOD"] == "DELETE" ) {
@@ -93,43 +88,46 @@
 
 
 			$this->headers = $this->parse_headers( $server );
-			$this->cookies = $this->parse_cookies( $this->header( "Cookie" ) );
+			
+			if ($this->has_header("cookie")) {
+				$this->cookies = $this->parse_cookies( $this->header( "Cookie" ) );
+			}
 
 		}
 
-		public function url() {
+		public function url():string {
 			return $this->url;
 		}
 
-		public function path() {
+		public function path():string {
 			return $this->path;
 		}
 
-		public function root() {
+		public function root():string {
 			return $this->root;
 		}
 
-		public function segments() {
+		public function segments():array {
 			return $this->segments;
 		}
 
-		public function header( $name ) {
+		public function header(string $name ):mixed {
 			return $this->headers[ $name ];
 		}
 
-		public function headers() {
+		public function headers():array {
 			return $this->headers;
 		}
 
-		public function has_header( $name ) {
+		public function has_header(string $name ):bool {
 			return (bool) $this->header( $name );
 		}
 
-		public function method () {
+		public function method ():string {
 			return $this->method;
 		}
 
-		public function input( $name ) {
+		public function input(string $name ) {
             return $this->input[ $name ];
 		}
 
@@ -137,33 +135,33 @@
             return $this->input;
 		}
 
-		public function has_input ( $name ) {
+		public function has_input (string $name ):bool {
             return (bool) $this->input( $name );
 		}
 
-		public function cookie( $name ) {
+		public function cookie(string $name ):string {
 			return $this->cookies[ $name ];
 		}
 
-		public function cookies() {
+		public function cookies():array {
 			return $this->cookies;
 		}
 
-		public function has_cookie( $name ) {
+		public function has_cookie(string $name):bool {
 			return (bool) $this->cookie( $name );
 		}
 
-		public function file ( $name ) {
+		public function file (string $name):mixed {
 			if ( is_array($this->files) ) return $this->files[ $name ];
 
 			return $this->files;
 		}
 
-		public function has_file( $name ) {
+		public function has_file(string $name):bool {
 			return isset( $this->files[ $name ] ) && !empty( $this->files[ $name ] );
 		}
 
-		public function is_secure() {
+		public function is_secure():bool {
 			return $this->secure;
 		}
 
@@ -171,21 +169,21 @@
 			return $this->server[ $key ];
 		}
 
-		private function _sanitize( $data ) {
-			$sanitied = [];
+		private function _sanitize(string|array $data ):string|array {
+			$sanitized = [];
 
 			if ( is_array( $data ) ) {
 				foreach ( $data as $key => $val ) {
-					$sanitied[$key] = $this->_sanitize( $val );
+					$sanitized[$key] = $this->_sanitize( $val );
 				}
 			} else {
-				$sanitied = trim(strip_tags($data));
+				$sanitized = trim(strip_tags($data));
 			}
 
-			return $sanitied;
+			return $sanitized;
 		}
 
-		private function parse_headers( $data ) {
+		private function parse_headers(array $data):array {
 			$headers = [];
 
 			foreach ( $data as $k => $v ) {
@@ -202,10 +200,8 @@
 			return $headers;
 		}
 
-		private function parse_cookies ( $data ) {
+		private function parse_cookies (string $data):array {
 			$cookies = [];
-			
-			if (!$data) return;
 
 			foreach ( explode( ";" , $data ) as $k => $v ) {
 				$c = explode("=", trim( $v ));

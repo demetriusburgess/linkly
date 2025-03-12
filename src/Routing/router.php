@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 // namespace Linkly\Routing;
-// require( __DIR__ . "/src/Http/Request.php" );
-// require( __DIR__ . "/src/Http/Response.php");
-require("/home/dburgess923/dev.demetriusburgess.com/linkly/src/Http/Request.php" );
-require("/home/dburgess923/dev.demetriusburgess.com/linkly/src/Http/Response.php");
+
+require( __DIR__ . "/../Http/Request.php" );
+require( __DIR__ . "/../Http/Response.php");
 
 // use Linkly\Https\Request;
 
@@ -40,33 +39,35 @@ class Router {
 
 	public Request $request;
 
-	public function __construct( Request $request ) {
+	public function __construct(Request $request) {
 		ob_start();
 		$this->method = $request->method();
 		$this->path   = $request->path();
 		$this->request = $request;
 	}
 
-	public function add(string $method, string $uri, callable $handler ) {
+	public function add(string $method, string $uri, callable $handler):bool {
 		if (!$method) return false;
 		
 		if ( !is_array($this->uri[$method]) ) {
-				$this->uri[ $method ] = [];
+			$this->uri[ $method ] = [];
 		}
 
 		if ( !is_array($this->action[$method]) ) {
-				$this->action[ $method ] = [];
+			$this->action[ $method ] = [];
 		}
 
 		$this->uri[ $method ][] = $uri == "/" ? "/" :  rtrim(trim($uri, "/"),"/");
 
-		if ( is_callable($handler) ) {
-				$h = $handler->bindTo( $this );
-				$this->action[ $method ][] = $h;
-		}
+		if (!is_callable($handler) ) return false;
+		
+		$stored_function = $handler->bindTo( $this );
+		$this->action[ $method ][] = $stored_function;
+
+		return true;
 	}
 
-	public function any(string $uri, callable $handler ):void {
+	public function any(string $uri, callable $handler):void {
 		foreach ( ["GET","POST","PUT","HEAD","DELETE"] as $key => $val ) {
 			$this->add( $val, $uri, $handler );
 		}
@@ -102,19 +103,23 @@ class Router {
 		return call_user_func_array($this->action[$this->method][$key], $params );
 	}
 	
-	public function handle_route($key, $params) {
+	public function handle_route(int $key, array $params):mixed {
 		if (!is_array($params)) $params = [];
-		
-		return call_user_func_array($this->action[$this->method][$key], $params );
+
+		$func = $this->action[$this->method][$key];
+
+		if (!$func) return false;
+
+		return call_user_func_array($func, $params );
 	}
 
-	public function run() {
+	public function run():void {
 		$method_matched = $this->match_method();
 		$match;
 		$params;
 		$output;
 
-		if ( !$method_matched ) return false;
+		if ( !$method_matched ) return;
 
 		foreach ( $this->uri[$this->method] as $key => $val ) {
 				$match = $this->path_match( $val, $this->path );
@@ -123,16 +128,23 @@ class Router {
 				
 				if ($match) {
 					$this->route_not_found = false;
+
+					if (!$params) $params = [];
+
 					$output = $this->handle_route($key, $params);
-					
-			
 				}		
 		}
 		
 		if ($this->route_not_found) {
 			$output = (new Response())
-					->set_header("Content-Type", "text/html")
-					->set_status( 404 );	
+				->set_header("Content-Type", "text/html")
+				->set_status( 404 );	
+		}
+
+		if (!$output) { 
+			$output = (new Response())
+				->set_header("Content-Type", "text/html")
+				->set_status( 400 );
 		}
 		
 		$this->build_response( $output );
@@ -140,7 +152,7 @@ class Router {
 		ob_end_flush();
 	}
 
-	private function path_match( string $a, string $b ) {
+	private function path_match(string $a, string $b) {
 		$a_segments;
 		$b_segments;
 		$match = true;
@@ -166,7 +178,7 @@ class Router {
 		}
 	}
 
-	private function extract_params( string $url_sting ):array|bool {
+	private function extract_params(string $url_sting):array|bool {
 		$params = false;
 
 		preg_match_all("/\{([^\}]+)\}/", $url_sting, $matches);
@@ -191,7 +203,6 @@ class Router {
 
 		$params = array_combine(array_keys($params), $values );
 		return $params;
-			
 	}
 
 	private function match_method():bool {

@@ -1,7 +1,10 @@
 RewriteEngine On
 RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !-d
+
+# Ignore existing files and directories
 RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteRule ^(.+)$ index.php [QSA,L]
-RewriteRule ^(.*)$ /?path=$1 [QSA,NC]
-## RewriteRule v1/(.*)$ api/v1/?path=$1 [QSA,NC]
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Send all other requests to index.php
+# RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteRule ^(.*)$ index.php?$1 [QSA,L]
