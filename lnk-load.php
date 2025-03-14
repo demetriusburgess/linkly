@@ -14,6 +14,17 @@ if (!isset($did_load)) {
 
     $req = new Request("api", $_REQUEST, $_SERVER, $_FILES );
     $router = new Router($req);
+    
+    $router->get("404", function(){
+        $template = new TemplateEngine(__DIR__.'/templates'); 
+        $page = $template->render('app', ["title" => "Main Entry", 'name' => ['home'=>'rams', 'back'=>'two'] ]);
+        
+		$res = (new Response())
+            ->set_header("Content-Type", "text/html")
+            ->set_status( 200 )
+            ->set_body( $page );
+		return $res;
+    });
 
     $router->get("", function(){
         ob_start();
