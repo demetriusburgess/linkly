@@ -20,12 +20,12 @@ class TemplateEngine
     protected array $macros = [];
     protected array $includeStack = [];
     protected int $maxIncludeDepth = 5;
-
+    
     public function __construct(string $templatePath)
     {
         $this->templatePath = rtrim($templatePath, '/');
     }
-
+    
     // Register a custom component (function call)
     public function registerComponent(string $name, callable $callback)
     {
@@ -57,48 +57,8 @@ class TemplateEngine
     }
 
     // Locate the template file on the file system
-    public function locate_template(string $name, bool $load = false, array $args = []): string {
-        $path = $this->templatePath . "/{$name}";
-        if (file_exists($path)) {
-            if ($load) {
-                $this->load_template($path, $args);
-            }
-            return $path;
-        }
-        return '';
-    }
-
-    // Load the template file and make the variables from $args available
-    public function load_template(string $filename, array $args = []):void  {
-        extract($args); // Make args available as variables in the template
-    
-        if ($load_once) {
-            require_once($filename);
-        } else {
-            require($filename);
-        }
-    
-    }
-
-    // Get and load a specific part of the template (modular approach)
-    public function get_template_part(string $slug, string $name = ''): void {
-        // Build the template path based on the provided slug and name
-        $template = "{$slug}-{$name}.php";
-        $path = $this->locate_template($template);
-
-        if (!$path) {
-            // Try without the name (fallback)
-            $template = "{$slug}.php";
-            $path = $this->locate_template($template);
-        }
-
-        if ($path) {
-            $this->load_template($path);
-        }
-    }
-
-    // Render a template
-    public function render(string $template, array $data = []): string {
+    // public function locate_template(string $template, bool $load = false, array $args = []): string {
+    public function locate_template(string $template): string {
         $template = preg_replace('/[^a-zA-Z0-9_-]/', '', $template);
         $file = realpath("{$this->templatePath}/{$template}.php");
 
@@ -106,10 +66,93 @@ class TemplateEngine
             throw new Exception("Invalid template path");
         }
 
+        return $file;
+    }
+
+    // Load the template file and make the variables from $args available
+    private function load_template(string $file, array $data = []):string  {
         $content = file_get_contents($file);
 
         // Handle includes with recursion protection
-        $content = preg_replace_callback('/{{\s*include\([\'"](.+?)[\'"]\)\s*}}/', function($matches) use ($data) {
+        $content = $this->handleIncludes($content, $data);
+        $content = $this->handleMacrosAndComponents($content, $data);
+        $content = $this->handleFilters($content, $data);
+        $content = $this->handleVariables($content, $data);
+
+        // Handle control structures like if, else, for, foreach, etc.
+        $content = $this->handleControlStructures($content);
+        
+        // Output the template
+        $tmpFile = tempnam(sys_get_temp_dir(), 'tpl_');
+        file_put_contents($tmpFile, $content);
+        return $tmpFile;    
+    }
+
+    // Render a template
+    public function render(string $template, array $data = []): string {
+        $file = $this->locate_template($template);
+        $templateFile = $this->load_template($file, $data);
+        
+        extract($data, EXTR_SKIP);
+        ob_start();
+        
+        include $templateFile;
+        $output = ob_get_clean();
+
+        unlink($templateFile); // Clean up temp file
+        
+        return $output; 
+    }
+
+    private function handleVariables(string $content, array $data):string {
+        // Handle variables
+        return preg_replace_callback('/{{\s*\$([\w]+(?:\[[^\]]+\])*)\s*}}/', function($matches) use ($data) {
+            return $this->getVariableValue($matches[1], $data);
+        }, $content);
+    }
+    
+    private function handleMacrosAndComponents(string $content, array $data):string {
+        // Handle macros and components
+        return preg_replace_callback('/{{\s*(\w+)\((.*?)\)\s*}}/', function($matches) use ($data) {
+            $component = $matches[1];
+            $params = str_getcsv($matches[2]);
+            
+            // Map params with data
+            $params = array_map(function($param) use ($data) {
+                return $this->mapParamToData($param, $data);
+            }, $params);
+            
+            // Check if it's a registered macro or component
+            if (isset($this->macros[$component])) {
+                return call_user_func_array($this->macros[$component], $params);
+            } elseif (isset($this->components[$component])) {
+                return call_user_func_array($this->components[$component], $params);
+            } elseif (in_array($component, $this->allowedFunctions)) {
+                return call_user_func($component, $params[0] ?? '');
+            }
+            
+            return '';
+        }, $content);
+    }
+
+    private function handleFilters(string $content, array $data):string {
+        // Handle filters
+        return preg_replace_callback('/{{\s*\$([\w]+)\s*\|\s*(\w+)\s*}}/', function($matches) use ($data) {
+            $key = trim($matches[1]);
+            $filterName = trim($matches[2]);
+            
+            if (isset($this->filters[$filterName])) {
+                $value = $data[$key] ?? '';
+                return call_user_func($this->filters[$filterName], $value);
+            }
+            
+            return $data[$key] ?? '';
+        }, $content);
+    }
+    
+    private function handleIncludes(string $content, array $data):string {
+        // Handle includes with recursion protection
+        return preg_replace_callback('/{{\s*include\([\'"](.+?)[\'"]\)\s*}}/', function($matches) use ($data) {
             $includeFile = preg_replace('/[^a-zA-Z0-9_-]/', '', $matches[1]);
             $includePath = realpath("{$this->templatePath}/{$includeFile}.php");
 
@@ -131,62 +174,6 @@ class TemplateEngine
 
             return $output;
         }, $content);
-
-        // Handle macros and components
-        $content = preg_replace_callback('/{{\s*(\w+)\((.*?)\)\s*}}/', function($matches) use ($data) {
-            $component = $matches[1];
-            $params = str_getcsv($matches[2]);
-
-            // Map params with data
-            $params = array_map(function($param) use ($data) {
-                return $this->mapParamToData($param, $data);
-            }, $params);
-
-            // Check if it's a registered macro or component
-            if (isset($this->macros[$component])) {
-                return call_user_func_array($this->macros[$component], $params);
-            } elseif (isset($this->components[$component])) {
-                return call_user_func_array($this->components[$component], $params);
-            } elseif (in_array($component, $this->allowedFunctions)) {
-                return call_user_func($component, $params[0] ?? '');
-            }
-
-            return '';
-        }, $content);
-
-        // Handle filters
-        $content = preg_replace_callback('/{{\s*\$([\w]+)\s*\|\s*(\w+)\s*}}/', function($matches) use ($data) {
-            $key = trim($matches[1]);
-            $filterName = trim($matches[2]);
-
-            if (isset($this->filters[$filterName])) {
-                $value = $data[$key] ?? '';
-                return call_user_func($this->filters[$filterName], $value);
-            }
-
-            return $data[$key] ?? '';
-        }, $content);
-
-        // Handle variables
-        $content = preg_replace_callback('/{{\s*\$([\w]+(?:\[[^\]]+\])*)\s*}}/', function($matches) use ($data) {
-            return $this->getVariableValue($matches[1], $data);
-        }, $content);
-
-        // Handle control structures like if, else, for, foreach, etc.
-        $content = $this->handleControlStructures($content);
-
-        // Output the template
-        $tmpFile = tempnam(sys_get_temp_dir(), 'tpl_');
-        file_put_contents($tmpFile, $content);
-
-        extract($data, EXTR_SKIP);
-        ob_start();
-        include $tmpFile;
-        $output = ob_get_clean();
-
-        unlink($tmpFile); // Clean up temp file
-
-        return $output;
     }
 
     // Helper methods

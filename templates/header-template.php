@@ -18,17 +18,7 @@
             <div class="branding col">
                 <a class="fs-3 fw-bold" href="#"><i class="fa-solid fa-link"></i> stubbylink</a>
             </div>
-            <nav id="main-nav" class="col-8">
-                <ul>
-                    <li><a class="fs-6 fw-normal" href="/linkly">Home</a></li>
-                    <li><a class="fs-6 fw-normal" href="/linkly/pricing.php">Pricing</a></li>
-                    <li><a class="fs-6 fw-normal" href="">Solution</a></li>
-                    <li><a class="fs-6 fw-normal" href="/linkly/blog.php">Blog</a></li>
-                    <li><a class="fs-6 fw-normal" href="/linkly/login.php">Login</a></li>
-                    <!-- <li><a href="" class="bttn _bttn--pill _bkgrd--secondary-1">Get Sarted</a></li> -->
-                    <li><a href="" class="btn btn-primary _bttn--pill fs-6">Get Sarted</a></li>
-                </ul>
-            </nav>
+            {{nav($menu)}}
         </div>
     </div>
 </header>

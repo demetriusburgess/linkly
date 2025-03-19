@@ -1,7 +1,7 @@
 <footer class="_bkgrd--tertiary-3">
     <div class="container upper-footer _color--basic-white">
         <div class="row">
-            <div class="branding col-3">
+            <!-- <div class="branding col-3">
                 <a href=""><h3>rx.link</h3></a>
                 <p>Got questions, feedback, or just want to say hello? Reach out to us on social media!</p>
                 <ul class="social-links list-unstyled">
@@ -35,12 +35,12 @@
                     <input type="text" name="long-url" id="" placeholder="Email address">
                     <button class="bttn _bttn--pill _bkgrd--primary-1 _color--basic-white"><i class="fa-solid fa-paper-plane"></i></button>    
                 </form>
-            </div>
+            </div> -->
         </div>
     </div>
     <div class="container lower-footer _color--basic-white">
         <div  class="row">
-            <div class="col-8">
+            <!-- <div class="col-8">
                 <p>&copy; rx.link <?php echo date("Y"); ?>, All Rights Reservered</p>
             </div>
             <div class="col-4">
@@ -50,7 +50,7 @@
                     <li class="list-inline-item"><a href="">Terms</a></li>
                     <li class="list-inline-item"><a href="">Report</a></li>
                 </ul>
-            </div>
+            </div> -->
         </div>
     </div>
 </footer>

@@ -16,8 +16,23 @@ if (!isset($did_load)) {
     $router = new Router($req);
     
     $router->get("404", function(){
-        $template = new TemplateEngine(__DIR__.'/templates'); 
-        $page = $template->render('app', ["title" => "Main Entry", 'name' => ['home'=>'rams', 'back'=>'two'] ]);
+        $template = new TemplateEngine(ABSPATH .'templates');
+        $page = 'load';
+
+        $template->registerComponent('nav', 'nav');
+        $template->registerComponent('linkform', 'linkform');
+        $template->registerComponent('linkcard', 'linkcard');
+
+        // $page = $template->render('app', ["title" => "Main Entry", 'name' => ['home'=>'rams', 'back'=>'two'] ]);
+        $page = $template->render('app-template', [
+        'id' => 'home-hero',
+        'subtitle' => 'Easy link shortening',
+        'title' => 'Short URL & QR code generator',
+        'message' => 'A short link allows you to collect so much data about your customers and their behavior.',
+        'url' => '',
+        "menu" =>  [
+            ["url" => "?api=login", "text" => "login"]
+        ]]);
         
 		$res = (new Response())
             ->set_header("Content-Type", "text/html")
@@ -38,9 +53,10 @@ if (!isset($did_load)) {
 		return $res;
     });
 
-    $router->get("admin", function(){
+    $router->get("login", function(){
         ob_start();
-        require( ABSPATH . 'templates/app.php');
+        // require( ABSPATH . 'templates/app.php');
+        require( ABSPATH . 'templates/admin/page/dashboard.php');
         $page = ob_get_clean();
         
 		$res = (new Response())

@@ -7,12 +7,17 @@ if (!defined('ABSPATH')) {
     die('');
 }
 
-include( ABSPATH . 'admin/template/header-dashboard.php'); ?>
+get_header("basic");
+get_template_part("admin/template/header-dashboard", "", []); 
+
+?>
 
 <section style="padding-top: 200px;">
     <div class="container">
         <div class="row">
-            <?php include('admin/template/card-table.php'); ?>
+            <?php get_template_part("admin/template/card-table", "", []); ?>
         </div>
     </div>
 </section>
+
+<?php get_footer("basic"); ?>
