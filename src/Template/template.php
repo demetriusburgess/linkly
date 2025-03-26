@@ -12,14 +12,22 @@ if (!defined('ABSPATH')) {
 class TemplateEngine
 {
     protected string $templatePath;
+
     protected array $components = [];
+
+    private static $globalComponents = [];
+
+    protected array $filters = [];
+    
+    protected array $macros = [];
+    
+    protected array $includeStack = [];
+    
+    protected int $maxIncludeDepth = 5;
+    
     protected array $allowedFunctions = [
         'strtolower', 'strtoupper', 'count', 'strlen', 'ucfirst', 'implode', 'htmlspecialchars'
     ];
-    protected array $filters = [];
-    protected array $macros = [];
-    protected array $includeStack = [];
-    protected int $maxIncludeDepth = 5;
     
     public function __construct(string $templatePath)
     {
@@ -27,19 +35,31 @@ class TemplateEngine
     }
     
     // Register a custom component (function call)
-    public function registerComponent(string $name, callable $callback)
+    public function register_component(string $name, callable $callback)
     {
         $this->components[$name] = $callback;
     }
 
+    // Register a custom global component (function call)
+    public static function register_global_component(string $name, callable $callback)
+    {
+        self::$globalComponents[$name] = $callback;
+    }
+
+    // Register a custom global component (function call)
+    public function get_components(string $name, callable $callback)
+    {
+        return array_merge(self::$globalComponents, $this->components);
+    }
+
     // Register a custom filter
-    public function registerFilter(string $name, callable $callback)
+    public function register_filter(string $name, callable $callback)
     {
         $this->filters[$name] = $callback;
     }
 
     // Register a custom macro
-    public function registerMacro(string $name, callable $callback)
+    public function register_macro(string $name, callable $callback)
     {
         $this->macros[$name] = $callback;
     }
@@ -74,13 +94,13 @@ class TemplateEngine
         $content = file_get_contents($file);
 
         // Handle includes with recursion protection
-        $content = $this->handleIncludes($content, $data);
-        $content = $this->handleMacrosAndComponents($content, $data);
-        $content = $this->handleFilters($content, $data);
-        $content = $this->handleVariables($content, $data);
+        $content = $this->handle_includes($content, $data);
+        $content = $this->handle_macros_and_components($content, $data);
+        $content = $this->handle_filters($content, $data);
+        $content = $this->handle_variables($content, $data);
 
         // Handle control structures like if, else, for, foreach, etc.
-        $content = $this->handleControlStructures($content);
+        $content = $this->handle_control_structures($content);
         
         // Output the template
         $tmpFile = tempnam(sys_get_temp_dir(), 'tpl_');
@@ -104,14 +124,14 @@ class TemplateEngine
         return $output; 
     }
 
-    private function handleVariables(string $content, array $data):string {
+    private function handle_variables(string $content, array $data):string {
         // Handle variables
         return preg_replace_callback('/{{\s*\$([\w]+(?:\[[^\]]+\])*)\s*}}/', function($matches) use ($data) {
-            return $this->getVariableValue($matches[1], $data);
+            return $this->get_variable_value($matches[1], $data);
         }, $content);
     }
     
-    private function handleMacrosAndComponents(string $content, array $data):string {
+    private function handle_macros_and_components(string $content, array $data):string {
         // Handle macros and components
         return preg_replace_callback('/{{\s*(\w+)\((.*?)\)\s*}}/', function($matches) use ($data) {
             $component = $matches[1];
@@ -119,7 +139,7 @@ class TemplateEngine
             
             // Map params with data
             $params = array_map(function($param) use ($data) {
-                return $this->mapParamToData($param, $data);
+                return $this->map_param_to_data($param, $data);
             }, $params);
             
             // Check if it's a registered macro or component
@@ -127,6 +147,8 @@ class TemplateEngine
                 return call_user_func_array($this->macros[$component], $params);
             } elseif (isset($this->components[$component])) {
                 return call_user_func_array($this->components[$component], $params);
+            }  elseif (isset(self::$globalComponents[$component])) {
+                return call_user_func_array(self::$globalComponents[$component], $params);
             } elseif (in_array($component, $this->allowedFunctions)) {
                 return call_user_func($component, $params[0] ?? '');
             }
@@ -135,7 +157,7 @@ class TemplateEngine
         }, $content);
     }
 
-    private function handleFilters(string $content, array $data):string {
+    private function handle_filters(string $content, array $data):string {
         // Handle filters
         return preg_replace_callback('/{{\s*\$([\w]+)\s*\|\s*(\w+)\s*}}/', function($matches) use ($data) {
             $key = trim($matches[1]);
@@ -150,7 +172,7 @@ class TemplateEngine
         }, $content);
     }
     
-    private function handleIncludes(string $content, array $data):string {
+    private function handle_includes(string $content, array $data):string {
         // Handle includes with recursion protection
         return preg_replace_callback('/{{\s*include\([\'"](.+?)[\'"]\)\s*}}/', function($matches) use ($data) {
             $includeFile = preg_replace('/[^a-zA-Z0-9_-]/', '', $matches[1]);
@@ -177,7 +199,7 @@ class TemplateEngine
     }
 
     // Helper methods
-    private function mapParamToData(string $param, array $data) {
+    private function map_param_to_data(string $param, array $data) {
         // Process parameters with variable mapping
         if (preg_match('/^\$([\w]+)$/', $param, $varMatch)) {
             return $data[$varMatch[1]] ?? '';
@@ -189,7 +211,7 @@ class TemplateEngine
         return trim($param, "\"'"); // Handle non-variable params
     }
 
-    private function getVariableValue(string $key, array $data) {
+    private function get_variable_value(string $key, array $data) {
         $parts = explode('[', str_replace(']', '', $key));
         $value = $data;
 
@@ -204,7 +226,7 @@ class TemplateEngine
         return $this->escape($value);
     }
 
-    private function handleControlStructures(string $content) {
+    private function handle_control_structures(string $content) {
         // Replace control structures with PHP syntax
         $content = preg_replace('/{{\s*if\s+(.+?)\s*}}/', '<?php if ($1): ?>', $content);
         $content = preg_replace('/{{\s*else\s*}}/', '<?php else: ?>', $content);
