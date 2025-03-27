@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
     die('');
 }
 
-get_header("basic");
+get_header("template");
 get_template_part("admin/template/header-dashboard", "", []); 
 
 ?>
@@ -20,4 +20,4 @@ get_template_part("admin/template/header-dashboard", "", []);
     </div>
 </section>
 
-<?php get_footer("basic"); ?>
+<?php get_footer("template"); ?>
