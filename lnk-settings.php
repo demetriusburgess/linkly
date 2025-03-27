@@ -12,5 +12,6 @@ require( ABSPATH . SRC . 'Routing/router.php');
 require( ABSPATH . 'templates/components/nav.php');
 require( ABSPATH . 'templates/components/linkcard.php');
 require( ABSPATH . 'templates/components/linkform.php');
-
+require( ABSPATH . 'templates/components/form-input.php');
+require( ABSPATH . 'templates/components/form-button.php');
 ?>

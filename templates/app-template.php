@@ -2,4 +2,4 @@
 <main>
     {{include('hero-template')}}
 </main>
-{{include('footer-basic')}}
+{{include('footer-template')}}
