@@ -153,29 +153,25 @@ class Router {
 	}
 
 	private function path_match(string $a, string $b) {
-		$a_segments;
-		$b_segments;
-		$match = true;
-
-		if (preg_match_All("#^$a$#", $b)) {
-			return $match;
-		} else {
-			$a_segments = explode("/", $a);
-			$b_segments = explode("/", $b);
-
-			if ( sizeof($a_segments) !== sizeof($b_segments) ) return false;
-
-			for ( $i = 0; $i < sizeof($a_segments); $i++ ) {
-				if ( $a_segments[$i] !== $b_segments[$i] ) {
-					// if ( !preg_match('/\{([^\}]+)\}/', $a_segments[$i]) ||  !preg_match('/\{([^\}]+)\}/', $a_segments[$i]) ) {
-					if ( !preg_match('/\{([^\}]+)\}/', $a_segments[$i]) &&  !preg_match('/\{([^\}]+)\}/', $b_segments[$i]) ) {
-						$match = false;
-					}
-				}
-			}
-
-			return $match;
+		// Direct full match
+		if (preg_match("#^$a$#", $b)) {
+			return true;
 		}
+
+		$a_segments = explode("/", trim($a, "/"));
+		$b_segments = explode("/", trim($b, "/"));
+
+		// if segment count is diffrerent, they don't match
+		if ( sizeof($a_segments) !== sizeof($b_segments) ) return false;
+
+		for ( $i = 0; $i < sizeof($a_segments); $i++ ) {
+			if ( $a_segments[$i] === $b_segments[$i] ) continue;
+
+			// Allow placeholders (e.g., `{id}`)
+			if (!preg_match('/^\{([^\}]+)\}$/', $a_segments[$i])) return false;
+		}
+
+		return true;
 	}
 
 	private function extract_params(string $url_sting):array|bool {
