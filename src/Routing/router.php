@@ -110,7 +110,7 @@ class Router {
 
 		if (!$func) return false;
 
-		return call_user_func_array($func, $params );
+		return call_user_func_array($func, array_values($params) );
 	}
 
 	public function run():void {
